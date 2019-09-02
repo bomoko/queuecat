@@ -1,0 +1,16 @@
+{
+    "name": "bomoko/queuecat",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Queuecat\\": "src/"
+        }
+    },
+    "require": {
+        "clue/stdio-react": "^2.3",
+        "aws/aws-sdk-php": "2.*",
+        "vlucas/phpdotenv": "^3.5@dev"
+    },
+    "license": "MIT",
+    "minimum-stability": "dev"
+}
