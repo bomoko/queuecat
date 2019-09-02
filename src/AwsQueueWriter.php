@@ -9,7 +9,7 @@ use Clue\React\Stdio\Stdio;
 use Aws\Common\Aws;
 
 
-class Cli implements QueueWriterInterface
+class AwsQueueWriter implements QueueWriterInterface
 {
 
     protected $awsClient = null;

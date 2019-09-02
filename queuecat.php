@@ -6,6 +6,6 @@ include_once(__DIR__ . "/vendor/autoload.php");
 $dotenv = Dotenv\Dotenv::create(__DIR__);
 $dotenv->load();
 
-$qc = \Queuecat\Cli::create($dotenv);
+$qc = \Queuecat\QueueWriterFactory::create($dotenv);
 
 $qc->run();
