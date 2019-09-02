@@ -13,8 +13,9 @@ class Cli
 {
 
     protected $awsClient = null;
+    protected $queueUrl = null;
 
-    public static function create($key, $secret, $region)
+    public static function create($key, $secret, $region, $queueUrl)
     {
         //let's try set up an AWS queue connection ...
         $client = SqsClient::factory([
@@ -22,28 +23,29 @@ class Cli
           'secret' => $secret,
           'region' => $region,
         ]);
-
-        return new static($client);
+        return new static($client, $queueUrl);
     }
 
-    protected function __construct($awsClient)
+    public function __construct($awsClient, $queueUrl)
     {
         $this->awsClient = $awsClient;
+        $this->queueUrl = $queueUrl;
     }
 
     public function run()
     {
         $loop = Factory::create();
         $stdio = new Stdio($loop);
+        $client = $this->awsClient;
+        $queueUrl = $this->queueUrl;
 
-
-        $stdio->on('data', function ($line) use ($stdio, $client) {
+        $stdio->on('data', function ($line) use ($stdio, $client, $queueUrl) {
             $line = rtrim($line, "\r\n");
             $stdio->write('Your input: ' . $line . PHP_EOL);
 
 
             $client->sendMessage([
-              'QueueUrl' => 'https://sqs.us-east-1.amazonaws.com/152002996554/queuecat_test',
+              'QueueUrl' => $queueUrl,
               'MessageBody' => $line,
             ]);
 
