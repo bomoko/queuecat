@@ -10,35 +10,13 @@ use Clue\React\Stdio\Stdio;
 
 class SyslogQueueWriter implements QueueWriterInterface
 {
+    use QueueWriterBaseTrait;
 
     protected $metaData = [];
 
     public static function create(Dotenv $dotenv)
     {
         return new static();
-    }
-
-
-    public function setMetaDataEntry($key, $value)
-    {
-        $this->metaData[$key] = $value;
-    }
-
-    public function getMetaDataEntry($key)
-    {
-        return $this->metaData[$key];
-    }
-
-    private function generateMessage($data)
-    {
-        //wrap this up in some kind of useful object
-        $message = [
-          'meta' => $this->metaData,
-          'timestamp' => time(),
-          'data' => $data,
-        ];
-
-        return json_encode($message);
     }
 
     public function run()

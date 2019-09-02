@@ -11,6 +11,7 @@ use Aws\Common\Aws;
 
 class AwsQueueWriter implements QueueWriterInterface
 {
+    use QueueWriterBaseTrait;
 
     protected $awsClient = null;
 
@@ -46,29 +47,6 @@ class AwsQueueWriter implements QueueWriterInterface
     {
         $this->awsClient = $awsClient;
         $this->queueUrl = $queueUrl;
-    }
-
-
-    public function setMetaDataEntry($key, $value)
-    {
-        $this->metaData[$key] = $value;
-    }
-
-    public function getMetaDataEntry($key)
-    {
-        return $this->metaData[$key];
-    }
-
-    private function generateMessage($data)
-    {
-        //wrap this up in some kind of useful object
-        $message = [
-          'meta' => $this->metaData,
-          'timestamp' => time(),
-          'data' => $data,
-        ];
-
-        return json_encode($message);
     }
 
     public function run()
