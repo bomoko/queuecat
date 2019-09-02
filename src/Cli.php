@@ -13,7 +13,10 @@ class Cli
 {
 
     protected $awsClient = null;
+
     protected $queueUrl = null;
+
+    protected $metaData = [];
 
     public static function create($key, $secret, $region, $queueUrl)
     {
@@ -32,6 +35,29 @@ class Cli
         $this->queueUrl = $queueUrl;
     }
 
+
+    public function setMetaDataEntry($key, $value)
+    {
+        $this->metaData[$key] = $value;
+    }
+
+    public function getMetaDataEntry($key)
+    {
+        return $this->metaData[$key];
+    }
+
+    private function generateMessage($data)
+    {
+        //wrap this up in some kind of useful object
+        $message = [
+          'meta' => $this->metaData,
+          'timestamp' => time(),
+          'data' => $data,
+        ];
+
+        return json_encode($message);
+    }
+
     public function run()
     {
         $loop = Factory::create();
@@ -41,17 +67,17 @@ class Cli
 
         $stdio->on('data', function ($line) use ($stdio, $client, $queueUrl) {
             $line = rtrim($line, "\r\n");
-            $stdio->write('Your input: ' . $line . PHP_EOL);
-
-
-            $client->sendMessage([
-              'QueueUrl' => $queueUrl,
-              'MessageBody' => $line,
-            ]);
+            $stdio->write($line . PHP_EOL);
 
             if ($line === 'quit') {
                 $stdio->end();
+                return;
             }
+
+            $client->sendMessage([
+              'QueueUrl' => $queueUrl,
+              'MessageBody' => $this->generateMessage($line),
+            ]);
         });
 
         $loop->run();
