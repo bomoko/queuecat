@@ -9,7 +9,7 @@ use Clue\React\Stdio\Stdio;
 use Aws\Common\Aws;
 
 
-class Cli
+class Cli implements QueueWriterInterface
 {
 
     protected $awsClient = null;
@@ -18,15 +18,28 @@ class Cli
 
     protected $metaData = [];
 
-    public static function create($key, $secret, $region, $queueUrl)
+
+    public static function create(Dotenv $dotenv)
     {
-        //let's try set up an AWS queue connection ...
-        $client = SqsClient::factory([
-          'key' => $key,
-          'secret' => $secret,
-          'region' => $region,
-        ]);
-        return new static($client, $queueUrl);
+        try {
+            $dotenv->required([
+              'ALGM_AWS_ACCESS_KEY_ID',
+              'ALGM_AWS_SECRET_ACCESS_KEY',
+              'ALGM_AWS_REGION',
+              'ALGM_AWS_QUEUE_URL',
+            ]);
+
+            //let's try set up an AWS queue connection ...
+            $client = SqsClient::factory([
+              'key' => getenv('ALGM_AWS_ACCESS_KEY_ID'),
+              'secret' => getenv('ALGM_AWS_SECRET_ACCESS_KEY'),
+              'region' => getenv('ALGM_AWS_REGION'),
+            ]);
+
+            return new static($client, getenv('ALGM_AWS_QUEUE_URL'));
+        } catch (\Exception $exception) {
+            return false;
+        }
     }
 
     public function __construct($awsClient, $queueUrl)
