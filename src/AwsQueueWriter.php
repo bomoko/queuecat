@@ -58,7 +58,6 @@ class AwsQueueWriter implements QueueWriterInterface
 
         $stdio->on('data', function ($line) use ($stdio, $client, $queueUrl) {
             $line = rtrim($line, "\r\n");
-            $stdio->write($line . PHP_EOL);
 
             if ($line === 'quit') {
                 $stdio->end();
